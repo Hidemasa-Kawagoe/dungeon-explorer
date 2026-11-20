@@ -432,3 +432,4 @@ dungeon/
 - **エディタ Worker の認証**: 静的アセットを含む**全リクエスト**で Worker が Access JWT を検証する(`run_worker_first: true`)。`DEV_BYPASS_EMAIL` は host が localhost のときのみ有効で、`.dev.vars` にのみ置く。
 - **階段**: エディタは階段を置くと、隣接階の同座標に対の階段を自動作成する(接続先の手動指定ダイアログは未実装)。接続先を変えたい場合は撤去して置き直す。
 - **エディタ未実装**: 階の並び替え、試遊ビュー(ドラフトのテストプレイ)、ロール分離。
+- **本番の公開構成(workers.dev)**: 独自ドメインがないため、エディタは `workers_dev: true`、`preview_urls: false` で `workers.dev` に公開し、Workers の Access(Worker 単位、All traffic)で保護している。Worker 側の JWT 検証(多層防御)はそのまま有効。§3 の「`workers_dev: false`・カスタムドメイン」はドメインを使う場合の構成で、手順は `docs/deploy.md` の付録を参照。
