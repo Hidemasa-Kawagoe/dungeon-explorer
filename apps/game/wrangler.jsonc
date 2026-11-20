@@ -17,8 +17,8 @@
 		// DEPLOY: set "id" to the SAME namespace id used by apps/editor (docs/deploy.md step 2).
 		// Without an id, `wrangler deploy` auto-provisions a separate namespace for this Worker,
 		// and published dungeons would silently never appear in the game.
-		{ "binding": "DUNGEON_META" },
-		{ "binding": "PLAYER_SAVE" }
+		{ "binding": "DUNGEON_META", "id": "c788ef1d254e49c789c763426de1132c" },
+		{ "binding": "PLAYER_SAVE", "id": "0a303c6ba68e4d529ba0c40b1e4fa009" }
 	],
 	"r2_buckets": [
 		// Published maps written by dungeon-editor; this Worker only reads them.
