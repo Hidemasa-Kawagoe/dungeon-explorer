@@ -14,6 +14,9 @@
 	},
 	"kv_namespaces": [
 		// Public list written by dungeon-editor; this Worker only reads it.
+		// DEPLOY: set "id" to the SAME namespace id used by apps/editor (docs/deploy.md step 2).
+		// Without an id, `wrangler deploy` auto-provisions a separate namespace for this Worker,
+		// and published dungeons would silently never appear in the game.
 		{ "binding": "DUNGEON_META" },
 		{ "binding": "PLAYER_SAVE" }
 	],

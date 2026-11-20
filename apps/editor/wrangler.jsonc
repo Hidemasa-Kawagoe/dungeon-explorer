@@ -22,6 +22,7 @@
 
 	"kv_namespaces": [
 		// Public list the game reads; written only by this Worker (via the index Durable Object).
+		// DEPLOY: set "id" to the SAME namespace id used by apps/game (docs/deploy.md step 2).
 		{ "binding": "DUNGEON_META" }
 	],
 	"r2_buckets": [
