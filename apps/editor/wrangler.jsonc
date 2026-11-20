@@ -6,9 +6,10 @@
 	"observability": { "enabled": true },
 	"upload_source_maps": true,
 
-	// The editor must only be reachable through the custom domain behind Cloudflare Access.
-	// workers.dev and preview URLs are NOT covered by that Access application, so disable them.
-	"workers_dev": false,
+	// No custom domain available: serve on workers.dev, protected by Cloudflare Access
+	// (Workers > dungeon-editor > Access tab, "All traffic"). Until ACCESS_AUD is set the Worker
+	// answers 403 to everything. Preview URLs stay disabled.
+	"workers_dev": true,
 	"preview_urls": false,
 
 	"assets": {
@@ -37,9 +38,9 @@
 
 	"vars": {
 		// Zero Trust team domain, e.g. "myteam.cloudflareaccess.com"
-		"ACCESS_TEAM_DOMAIN": "",
+		"ACCESS_TEAM_DOMAIN": "rapid-field-4f2e.cloudflareaccess.com",
 		// AUD tag of the Access application protecting the editor hostname
-		"ACCESS_AUD": ""
+		"ACCESS_AUD": "97ecfa50de92543415444e62dfdd74b263d10fb88c4ba29dd5e38be711dc35b0"
 	}
 	// TODO(deploy): routes -> { "pattern": "editor.example.com", "custom_domain": true }
 }
