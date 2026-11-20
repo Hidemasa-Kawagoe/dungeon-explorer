@@ -7,7 +7,10 @@
     "deploy:game": "npm run deploy -w @dungeon/game",
     "test": "npm test --workspaces --if-present",
     "test:shared": "npm test -w @dungeon/shared",
-    "test:game": "npm test -w @dungeon/game"
+    "test:game": "npm test -w @dungeon/game",
+    "dev:editor": "npm run dev -w @dungeon/editor",
+    "deploy:editor": "npm run deploy -w @dungeon/editor",
+    "test:editor": "npm test -w @dungeon/editor"
   },
   "devDependencies": {
     "@cloudflare/vitest-plugin": "^1.0.0",

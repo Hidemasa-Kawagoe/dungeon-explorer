@@ -203,3 +203,16 @@ describe("reconcileSave", () => {
 		expect([...r.openedChests]).toEqual([`0:${key}`]);
 	});
 });
+
+import { validateDungeonShape } from "../src";
+describe("validateDungeonShape", () => {
+	it("accepts a real dungeon, rejects junk without throwing", () => {
+		expect(validateDungeonShape(sampleDungeon())).toEqual([]);
+		for (const bad of [null, 1, [], {}, { id: "x", name: "n", startPoint: {}, floors: [{}] }, { ...sampleDungeon(), floors: "no" }]) {
+			expect(validateDungeonShape(bad).length).toBeGreaterThan(0);
+		}
+		const d = sampleDungeon() as any;
+		d.floors[0].cells = ["a"];
+		expect(validateDungeonShape(d).join()).toContain("integer arrays");
+	});
+});

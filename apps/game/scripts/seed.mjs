@@ -17,9 +17,9 @@ try {
 		const f = join(tmp, "obj", key);
 		mkdirSync(dirname(f), { recursive: true });
 		writeFileSync(f, text);
-		wrangler(["r2", "object", "put", `dungeon-published/${key}`, "--local", "--file", f, "--content-type", "application/json"]);
+		wrangler(["r2", "object", "put", `dungeon-published/${key}`, "--local", "--persist-to", "../../.wrangler/state", "--file", f, "--content-type", "application/json"]);
 	}
-	wrangler(["kv", "key", "put", "dungeon:index", indexJson, "--binding", "DUNGEON_META", "--local"]);
+	wrangler(["kv", "key", "put", "dungeon:index", indexJson, "--binding", "DUNGEON_META", "--local", "--persist-to", "../../.wrangler/state"]);
 	console.log("seeded sample dungeon");
 } finally {
 	rmSync(tmp, { recursive: true, force: true });

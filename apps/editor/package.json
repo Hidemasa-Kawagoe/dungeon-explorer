@@ -1,0 +1,17 @@
+{
+  "name": "@dungeon/editor",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:client": "vite build",
+    "dev": "npm run build:client && wrangler dev --port 8788 --inspector-port 9230 --persist-to ../../.wrangler/state",
+    "deploy": "npm run build:client && wrangler deploy",
+    "test": "vitest run",
+    "cf-typegen": "wrangler types",
+    "typecheck": "tsc -p tsconfig.json && tsc -p test/tsconfig.json && tsc -p client/tsconfig.json"
+  },
+  "dependencies": {
+    "@dungeon/shared": "*"
+  }
+}

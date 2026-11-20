@@ -125,3 +125,42 @@ export function validateDungeon(d: Dungeon, opts: ValidateOptions = {}): string[
 	}
 	return e;
 }
+
+const isInt = (v: unknown): v is number => typeof v === "number" && Number.isInteger(v);
+const isIntArray = (v: unknown): v is number[] => Array.isArray(v) && v.every(isInt);
+
+/**
+ * Shape check for untrusted JSON (types only, no game rules). Run this before
+ * validateDungeon, which assumes well-typed input.
+ */
+export function validateDungeonShape(x: unknown): string[] {
+	if (typeof x !== "object" || x === null || Array.isArray(x)) return ["dungeon must be an object"];
+	const d = x as Record<string, unknown>;
+	const e: string[] = [];
+	if (typeof d.id !== "string") e.push("id must be a string");
+	if (typeof d.name !== "string") e.push("name must be a string");
+	const sp = d.startPoint as Record<string, unknown> | undefined;
+	if (!sp || !isInt(sp.floor) || !isInt(sp.x) || !isInt(sp.y) || !isInt(sp.dir) || sp.dir < 0 || sp.dir > 3) {
+		e.push("startPoint must be {floor,x,y,dir}");
+	}
+	if (!Array.isArray(d.floors)) return [...e, "floors must be an array"];
+	d.floors.forEach((f: unknown, i: number) => {
+		const g = f as Record<string, unknown> | null;
+		if (typeof g !== "object" || g === null) return e.push(`floor ${i}: must be an object`);
+		if (!isInt(g.index) || !isInt(g.width) || !isInt(g.height)) e.push(`floor ${i}: index/width/height must be integers`);
+		if (!isIntArray(g.cells) || !isIntArray(g.hEdges) || !isIntArray(g.vEdges)) e.push(`floor ${i}: cells/hEdges/vEdges must be integer arrays`);
+		if (!Array.isArray(g.links)) e.push(`floor ${i}: links must be an array`);
+		else
+			for (const l of g.links as Record<string, any>[]) {
+				const to = l?.to, from = l?.from;
+				if (!from || !to || !isInt(from.x) || !isInt(from.y) || !isInt(to.floor) || !isInt(to.x) || !isInt(to.y) || !isInt(to.dir) || to.dir < 0 || to.dir > 3) {
+					e.push(`floor ${i}: malformed link`);
+					break;
+				}
+			}
+		const ch = g.chests;
+		if (typeof ch !== "object" || ch === null || Array.isArray(ch)) e.push(`floor ${i}: chests must be an object`);
+		else if (Object.values(ch).some((c) => typeof (c as any)?.id !== "string")) e.push(`floor ${i}: chest without id`);
+	});
+	return e;
+}

@@ -107,7 +107,7 @@ Editor ─ editor.example.com ─▶ [Cloudflare Access] ─▶ Worker: dungeon-
   "main": "src/index.ts",
   "workers_dev": false,
   "preview_urls": false,
-  "assets": { "directory": "./dist/editor", "binding": "ASSETS", "not_found_handling": "single-page-application" },
+  "assets": { "directory": "./dist/client", "binding": "ASSETS", "run_worker_first": true, "not_found_handling": "single-page-application" },
   "kv_namespaces": [{ "binding": "DUNGEON_META", "id": "<meta-kv-id>" }],
   "r2_buckets": [
     { "binding": "DRAFT", "bucket_name": "dungeon-draft" },
@@ -244,12 +244,11 @@ interface PlayerSave {
 | 名前空間 | キー | 値 | 書き込み | 読み取り |
 |---|---|---|---|---|
 | `DUNGEON_META` | `dungeon:index` | 公開済み一覧 `[{id,name,revision,floors,publishedAt}]` | editor | game, editor |
-| `DUNGEON_META` | `dungeon:draft-index` | ドラフト含む一覧(エディタ用) | editor | editor のみ(ゲームはこのキーを参照しない) |
+| (R2 `dungeon-draft`) | `index.json` | ドラフト含む一覧(エディタ専用)。**KV ではなく R2 に置く**: 強整合で、ゲームと共有する名前空間にも載らない | editor(index DO 経由) | editor のみ |
 | `PLAYER_SAVE` | `save:{playerId}:{dungeonId}` | `PlayerSave` JSON(数KB、TTL なし) | game | game |
 
 - `playerId` は初回アクセスで game Worker が生成し、`HttpOnly; Secure; SameSite=Lax` Cookie で保持(匿名)。
 - KV は結果整合(反映に最大 60 秒程度かかる場合あり)であるため、**セーブは「クライアントが最新状態を保持し、定期/節目で PUT」**し、読み込みは起動時のみとする。
-- ドラフト一覧をゲームと共有する名前空間に置かないほうが安全なため、実装時は `DRAFT_META`(editor 専用)への分離も検討する。
 
 ## 6. API
 
@@ -426,3 +425,10 @@ dungeon/
 - マルチプレイ / 共同編集(DO + WebSocket)。
 - 宝箱の中身・アイテム・敵、テクスチャ/効果音。
 - R2 の古い revision の自動クリーンアップ(Cron Triggers)。
+
+## 13. 実装メモ(Phase 1 実装時の設計差分)
+- **エディタの索引**: ドラフト一覧は R2 `index.json`、公開一覧は KV `dungeon:index`。いずれも更新は、固定名 `__index__` の Durable Object(`DungeonEditorLock` の別インスタンス)に集約し、別ダンジョンの保存・公開が同時に起きても読み取り→書き込みが衝突しないようにしている。
+- **排他制御**: ダンジョンごとの DO が、リビジョン照合・R2 書き込み・索引更新を直列化する。リビジョンの真値は R2 の manifest(強整合)。
+- **エディタ Worker の認証**: 静的アセットを含む**全リクエスト**で Worker が Access JWT を検証する(`run_worker_first: true`)。`DEV_BYPASS_EMAIL` は host が localhost のときのみ有効で、`.dev.vars` にのみ置く。
+- **階段**: エディタは階段を置くと、隣接階の同座標に対の階段を自動作成する(接続先の手動指定ダイアログは未実装)。接続先を変えたい場合は撤去して置き直す。
+- **エディタ未実装**: 階の並び替え、試遊ビュー(ドラフトのテストプレイ)、ロール分離。

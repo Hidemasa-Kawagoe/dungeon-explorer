@@ -105,3 +105,15 @@ export interface DungeonIndexEntry {
 }
 
 export const ID_PATTERN = /^[A-Za-z0-9_-]{1,64}$/;
+
+/** Editor-only index entry (R2 `index.json` in the draft bucket). */
+export interface DraftIndexEntry {
+	id: string;
+	name: string;
+	revision: number;
+	floors: number;
+	updatedAt: string;
+	updatedBy?: string;
+	/** revision currently visible to players, or null when unpublished */
+	publishedRevision: number | null;
+}

@@ -1,0 +1,3 @@
+# Local development only (copy to .dev.vars). Honoured ONLY when the request host is localhost/127.0.0.1;
+# never set this as a deployed variable or secret.
+DEV_BYPASS_EMAIL=dev@example.com

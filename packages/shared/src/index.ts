@@ -8,3 +8,4 @@ export * from "./generator";
 export * from "./stairs";
 export * from "./validate";
 export * from "./save";
+export * from "./editing";

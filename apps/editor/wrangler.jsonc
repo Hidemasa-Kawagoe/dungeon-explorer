@@ -1,0 +1,44 @@
+{
+	"$schema": "../../node_modules/wrangler/config-schema.json",
+	"name": "dungeon-editor",
+	"main": "src/index.ts",
+	"compatibility_date": "2026-09-07",
+	"observability": { "enabled": true },
+	"upload_source_maps": true,
+
+	// The editor must only be reachable through the custom domain behind Cloudflare Access.
+	// workers.dev and preview URLs are NOT covered by that Access application, so disable them.
+	"workers_dev": false,
+	"preview_urls": false,
+
+	"assets": {
+		"directory": "./dist/client",
+		"binding": "ASSETS",
+		// Run the Worker for every request (not just /api/*) so the Access JWT is verified
+		// before any asset is served, not only at the edge.
+		"run_worker_first": true,
+		"not_found_handling": "single-page-application"
+	},
+
+	"kv_namespaces": [
+		// Public list the game reads; written only by this Worker (via the index Durable Object).
+		{ "binding": "DUNGEON_META" }
+	],
+	"r2_buckets": [
+		// Draft maps + editor-only index.json. Never bound to the game Worker.
+		{ "binding": "DRAFT", "bucket_name": "dungeon-draft" },
+		{ "binding": "PUBLISHED", "bucket_name": "dungeon-published" }
+	],
+	"durable_objects": {
+		"bindings": [{ "name": "EDITOR_LOCK", "class_name": "DungeonEditorLock" }]
+	},
+	"migrations": [{ "tag": "v1", "new_sqlite_classes": ["DungeonEditorLock"] }],
+
+	"vars": {
+		// Zero Trust team domain, e.g. "myteam.cloudflareaccess.com"
+		"ACCESS_TEAM_DOMAIN": "",
+		// AUD tag of the Access application protecting the editor hostname
+		"ACCESS_AUD": ""
+	}
+	// TODO(deploy): routes -> { "pattern": "editor.example.com", "custom_domain": true }
+}
