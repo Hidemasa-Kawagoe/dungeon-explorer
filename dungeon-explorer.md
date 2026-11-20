@@ -208,7 +208,7 @@ interface PlayerSave {
   dungeonId: string;
   dungeonRevision: number;      // 保存時のダンジョン版。不一致時はマップ記録を整合させる
   position: { floor: number; x: number; y: number; dir: Dir };
-  visited: Record<number, string>;   // floor → 訪問済みビットマップ(base64, 1bit/セル)
+  visited: Record<number, string>;   // floor → "WxH:base64" 訪問済みビットマップ(1bit/セル。サイズを併記し、改訂でサイズが変わった階は破棄)
   openedChests: string[];            // "floor:x,y"
   inventory: string[];
   updatedAt: string;

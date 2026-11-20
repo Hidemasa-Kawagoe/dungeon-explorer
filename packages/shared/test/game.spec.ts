@@ -152,3 +152,54 @@ describe("validateDungeon", () => {
 		expect(validateDungeon(d, { forPublish: true }).join()).toContain("unreachable");
 	});
 });
+
+import { packVisited, unpackVisited, reconcileSave, type PlayerSave } from "../src";
+
+describe("visited packing", () => {
+	it("round-trips and rejects a different floor size", () => {
+		const bits = createVisited(10, 10);
+		markVisited(bits, 10, 2, 2);
+		const s = packVisited(bits, 10, 10);
+		expect(isVisited(unpackVisited(s, 10, 10), 10, 10, 2, 2)).toBe(true);
+		// same byte length (100 cells) but different shape must NOT be reused
+		expect(isVisited(unpackVisited(s, 20, 5), 20, 5, 2, 2)).toBe(false);
+		expect(unpackVisited(undefined, 5, 5).length).toBe(4);
+	});
+});
+
+describe("reconcileSave", () => {
+	const dungeon = () => {
+		const d = sampleDungeon();
+		return { startPoint: d.startPoint, floors: d.floors };
+	};
+	const baseSave = (d: ReturnType<typeof dungeon>): PlayerSave => ({
+		playerId: "p", dungeonId: "d", dungeonRevision: 1, updatedAt: "",
+		position: { floor: 0, x: 0, y: 0, dir: 2 },
+		visited: { 0: packVisited(createVisited(10, 10), 10, 10) },
+		openedChests: [], inventory: ["key"],
+	});
+	it("fresh start without a save", () => {
+		const d = dungeon();
+		const r = reconcileSave(null, d);
+		expect(r.position).toEqual(d.startPoint);
+		expect(r.visited.size).toBe(2);
+	});
+	it("keeps a valid position; resets one on a VOID cell", () => {
+		const d = dungeon();
+		expect(reconcileSave(baseSave(d), d).position).toEqual({ floor: 0, x: 0, y: 0, dir: 2 });
+		setCell(d.floors[0]!, 0, 0, CellType.VOID);
+		expect(reconcileSave(baseSave(d), d).position).toEqual(d.startPoint);
+		const s = baseSave(d);
+		s.position.floor = 7;
+		expect(reconcileSave(s, d).position).toEqual(d.startPoint);
+	});
+	it("drops opened-chest keys that are no longer chests, keeps real ones", () => {
+		const d = dungeon();
+		const f = d.floors[0]!;
+		const key = Object.keys(f.chests)[0]!;
+		const s = baseSave(d);
+		s.openedChests = [`0:${key}`, "0:0,0", "5:1,1", "junk"];
+		const r = reconcileSave(s, d);
+		expect([...r.openedChests]).toEqual([`0:${key}`]);
+	});
+});

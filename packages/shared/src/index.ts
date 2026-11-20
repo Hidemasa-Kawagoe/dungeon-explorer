@@ -7,3 +7,4 @@ export * from "./rng";
 export * from "./generator";
 export * from "./stairs";
 export * from "./validate";
+export * from "./save";

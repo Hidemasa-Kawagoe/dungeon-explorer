@@ -82,3 +82,26 @@ export interface EdgeRef {
 	kind: EdgeKind;
 	index: number;
 }
+
+/** Stored at dungeons/{id}/manifest.json (R2). Floors live in r{revision}/floor-{n}.json. */
+export interface DungeonManifest {
+	id: string;
+	name: string;
+	revision: number;
+	startPoint: PlayerState;
+	floors: { index: number; width: number; height: number }[];
+	updatedAt: string;
+	updatedBy?: string;
+	publishedBy?: string;
+}
+
+/** Entry of the public list in KV `dungeon:index`. */
+export interface DungeonIndexEntry {
+	id: string;
+	name: string;
+	revision: number;
+	floors: number;
+	publishedAt: string;
+}
+
+export const ID_PATTERN = /^[A-Za-z0-9_-]{1,64}$/;

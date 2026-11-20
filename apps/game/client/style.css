@@ -1,0 +1,16 @@
+html, body { margin: 0; height: 100%; background: #000; color: #e8e0d0; font-family: system-ui, sans-serif; overflow: hidden; }
+canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+#map { background: rgba(8, 8, 12, 0.96); }
+[hidden] { display: none !important; }
+#hud { position: fixed; left: 12px; top: 10px; pointer-events: none; text-shadow: 0 1px 3px #000; }
+#floor-label { font-size: 20px; font-weight: 700; }
+#help { font-size: 12px; opacity: 0.7; margin-top: 4px; }
+#toast { position: fixed; left: 50%; bottom: 14%; transform: translateX(-50%); padding: 10px 18px; background: rgba(0,0,0,.75); border: 1px solid #c9a24b; border-radius: 6px; }
+#fade { position: fixed; inset: 0; background: #000; opacity: 0; pointer-events: none; transition: opacity .25s; }
+#fade.on { opacity: 1; }
+#menu { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; background: #0b0a10; }
+#menu.gone { display: none; }
+#menu h1 { margin: 0 0 8px; font-size: 28px; }
+#menu button { min-width: 260px; padding: 12px 18px; font-size: 16px; color: inherit; background: #1d1a26; border: 1px solid #5b4f7a; border-radius: 6px; cursor: pointer; }
+#menu button:hover { background: #2a2540; }
+#menu .note { opacity: .7; font-size: 13px; max-width: 420px; text-align: center; line-height: 1.6; }

@@ -48,3 +48,22 @@ export function decodeVisited(data: string | undefined, width: number, height: n
 	}
 	return out;
 }
+
+/**
+ * Save format for one floor's bitmap: "WxH:base64". Carrying the dimensions lets a
+ * later map revision detect a resized floor instead of misreading the bits.
+ */
+export function packVisited(bits: Uint8Array, width: number, height: number): string {
+	return `${width}x${height}:${encodeVisited(bits)}`;
+}
+
+/** Empty bitmap when missing, malformed, or recorded for a different floor size. */
+export function unpackVisited(data: string | undefined, width: number, height: number): Uint8Array {
+	const m = data ? /^(\d{1,2})x(\d{1,2}):(.*)$/.exec(data) : null;
+	if (!m || Number(m[1]) !== width || Number(m[2]) !== height) return createVisited(width, height);
+	return decodeVisited(m[3], width, height);
+}
+
+export function hasAnyVisited(bits: Uint8Array): boolean {
+	return bits.some((b) => b !== 0);
+}

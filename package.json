@@ -3,12 +3,11 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "deploy": "wrangler deploy",
-    "dev": "wrangler dev",
-    "start": "wrangler dev",
-    "test": "vitest",
-    "cf-typegen": "wrangler types",
-    "test:shared": "npm test -w @dungeon/shared"
+    "dev:game": "npm run dev -w @dungeon/game",
+    "deploy:game": "npm run deploy -w @dungeon/game",
+    "test": "npm test --workspaces --if-present",
+    "test:shared": "npm test -w @dungeon/shared",
+    "test:game": "npm test -w @dungeon/game"
   },
   "devDependencies": {
     "@cloudflare/vitest-plugin": "^1.0.0",
@@ -18,6 +17,7 @@
     "wrangler": "^4.161.0"
   },
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "apps/*"
   ]
 }

@@ -1,0 +1,25 @@
+{
+	"$schema": "../../node_modules/wrangler/config-schema.json",
+	"name": "dungeon-game",
+	"main": "src/index.ts",
+	"compatibility_date": "2026-09-07",
+	"observability": { "enabled": true },
+	"upload_source_maps": true,
+	"assets": {
+		"directory": "./dist/client",
+		"binding": "ASSETS",
+		"not_found_handling": "single-page-application",
+		// API paths must reach the Worker even when no asset matches.
+		"run_worker_first": ["/api/*"]
+	},
+	"kv_namespaces": [
+		// Public list written by dungeon-editor; this Worker only reads it.
+		{ "binding": "DUNGEON_META" },
+		{ "binding": "PLAYER_SAVE" }
+	],
+	"r2_buckets": [
+		// Published maps written by dungeon-editor; this Worker only reads them.
+		{ "binding": "PUBLISHED", "bucket_name": "dungeon-published" }
+	]
+	// TODO(deploy): add routes/custom domain (play.example.com) once the domain is decided.
+}
